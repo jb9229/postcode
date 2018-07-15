@@ -104,9 +104,14 @@
           cmAddress : document.getElementById('cmAddress').value,
           cmAddressDetail : document.getElementById('cmAddressDetail').value,
           nmAddress : document.getElementById('nmAddress').value,
-          nmAddressDetail : document.getElementById('nmAddressDetail').value,
+          nmAddressDetail : document.getElementById('nmAddressDetail').value
       };
 
-        window.postMessage(postData);
+      console.log(postData.cmAddress);
+      console.log(postData.cmAddressDetail);
+      console.log(postData.nmAddress);
+      console.log(postData.nmAddressDetail);
+
+      window.postMessage(postData);
     }
 </script>
