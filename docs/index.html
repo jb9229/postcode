@@ -2,13 +2,13 @@
   <label>현 거주지: </label> <input type="button" onclick="execDaumPostcode('cm')" value="주소 찾기"><br>
 
   <div id="cmWrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
-    <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+    <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap_1" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
   </div>
   <div style="margin-bottom:3px;">
     <input type="text" id="cmAddress" class="d_form large" placeholder="주소" >
   </div>
   <div>
-    <input type="text" id="cmAddressDetail" placeholder="상세 주소">
+    <input type="text" id="cmAddressDetail" onchange="sendPostData()" placeholder="상세 주소">
   </div>
 </div>
 
@@ -16,14 +16,14 @@
   <label>이사지: </label> <input type="button" onclick="execDaumPostcode('nm')" value="주소 찾기"><br>
 
   <div id="nmWrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
-    <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+    <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap_2" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
   </div>
 
   <div style="margin-bottom:3px;">
     <input type="text" id="nmAddress" class="d_form large" placeholder="주소">
   </div>
   <div>
-    <input type="text" id="nmAddressDetail" placeholder="상세 주소">
+    <input type="text" id="nmAddressDetail" onchange="sendPostData()" placeholder="상세 주소">
   </div>
 </div>
 
@@ -75,7 +75,7 @@
                     fullAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
                 }
 
-                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                // 주소 정보를 해당 필드에 넣는다.
                 document.getElementById(where+'Address').value = fullAddr;
 
                 // iframe을 넣은 element를 안보이게 한다.
@@ -84,6 +84,8 @@
 
                 // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
                 document.body.scrollTop = currentScroll;
+
+                sendPostData();
             },
             // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
             onresize : function(size) {
@@ -95,5 +97,16 @@
 
         // iframe을 넣은 element를 보이게 한다.
         element_wrap.style.display = 'block';
+    }
+
+    function sendPostData(){
+      var postData = {
+          cmAddress : document.getElementById('cmAddress').value,
+          cmAddressDetail : document.getElementById('cmAddressDetail').value,
+          nmAddress : document.getElementById('nmAddress').value,
+          nmAddressDetail : document.getElementById('nmAddressDetail').value,
+      };
+
+        window.postMessage(postData);
     }
 </script>
