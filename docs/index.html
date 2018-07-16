@@ -108,6 +108,7 @@
       };
 
 
-      window.postMessage(JSON.stringify(postData));
+      var data = JSON.stringify(postData)
+      window.postMessage(data);
     }
 </script>
