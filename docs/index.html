@@ -1,29 +1,14 @@
 <div style="margin-bottom: 50px;">
-  <label>현 거주지: </label> <input type="button" onclick="execDaumPostcode('cm')" value="주소 찾기"><br>
+  <label>주소 입력: </label> <input type="button" onclick="execDaumPostcode()" value="주소 찾기"><br>
 
-  <div id="cmWrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+  <div id="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
     <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap_1" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
   </div>
   <div style="margin-bottom:3px;">
-    <input type="text" id="cmAddress" class="d_form large" placeholder="주소" >
+    <input type="text" id="address" class="d_form large" placeholder="주소" >
   </div>
   <div>
-    <input type="text" id="cmAddressDetail" onchange="sendPostData()" placeholder="상세 주소">
-  </div>
-</div>
-
-<div style="">
-  <label>이사지: </label> <input type="button" onclick="execDaumPostcode('nm')" value="주소 찾기"><br>
-
-  <div id="nmWrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
-    <img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png" id="btnFoldWrap_2" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
-  </div>
-
-  <div style="margin-bottom:3px;">
-    <input type="text" id="nmAddress" class="d_form large" placeholder="주소">
-  </div>
-  <div>
-    <input type="text" id="nmAddressDetail" onchange="sendPostData()" placeholder="상세 주소">
+    <input type="text" id="addressDetail" onchange="sendPostData()" placeholder="상세 주소">
   </div>
 </div>
 
@@ -31,25 +16,15 @@
 <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
 <script>
     // 우편번호 찾기 찾기 화면을 넣을 element
-    var cm_element_wrap = document.getElementById('cmWrap');
-    var nm_element_wrap = document.getElementById('nmWrap');
+    var element_wrap = document.getElementById('wrap');
 
     function foldDaumPostcode() {
         // iframe을 넣은 element를 안보이게 한다.
-        cm_element_wrap.style.display = 'none';
-        nm_element_wrap.style.display = 'none';
+        element_wrap.style.display = 'none';
     }
 
-    function execDaumPostcode(where) {
-        var element_wrap;
+    function execDaumPostcode() {
 
-        if(where == "cm")
-        {
-          element_wrap  = cm_element_wrap;
-        }else if(where == "nm")
-        {
-          element_wrap  = nm_element_wrap;
-        }
         // 현재 scroll 위치를 저장해놓는다.
         var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
         new daum.Postcode({
@@ -76,7 +51,7 @@
                 }
 
                 // 주소 정보를 해당 필드에 넣는다.
-                document.getElementById(where+'Address').value = fullAddr;
+                document.getElementById('address').value = fullAddr;
 
                 // iframe을 넣은 element를 안보이게 한다.
                 // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
@@ -101,10 +76,8 @@
 
     function sendPostData(){
       var postData = {
-          cmAddress : document.getElementById('cmAddress').value,
-          cmAddressDetail : document.getElementById('cmAddressDetail').value,
-          nmAddress : document.getElementById('nmAddress').value,
-          nmAddressDetail : document.getElementById('nmAddressDetail').value
+          address : document.getElementById('address').value,
+          addressDetail : document.getElementById('addressDetail').value,
       };
 
 
