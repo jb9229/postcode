@@ -5,6 +5,18 @@
   value="주소 검색"
 /><br />
 <div
+  id="wrap"
+  style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
+>
+  <img
+    src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
+    id="btnFoldWrap_1"
+    style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+    onclick="foldDaumPostcode()"
+    alt="접기 버튼"
+  />
+</div>
+<div
   id="map"
   style="width:300px;height:300px;margin-top:10px;display:none"
 ></div>
@@ -12,6 +24,9 @@
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e58edd180ca9edbac661ded4969a2348&libraries=services"></script>
 <script>
+  // 우편번호 찾기 찾기 화면을 넣을 element
+  var element_wrap = document.getElementById("wrap");
+
   var mapContainer = document.getElementById("map"), // 지도를 표시할 div
     mapOption = {
       center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
@@ -28,7 +43,17 @@
     map: map
   });
 
+  function foldDaumPostcode() {
+    // iframe을 넣은 element를 안보이게 한다.
+    element_wrap.style.display = "none";
+  }
+
   function sample5_execDaumPostcode() {
+    // 현재 scroll 위치를 저장해놓는다.
+    var currentScroll = Math.max(
+      document.body.scrollTop,
+      document.documentElement.scrollTop
+    );
     new daum.Postcode({
       oncomplete: function(data) {
         var addr = data.address; // 최종 주소 변수
@@ -52,7 +77,16 @@
             marker.setPosition(coords);
           }
         });
-      }
-    }).open();
+      },
+      // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+      onresize: function(size) {
+        element_wrap.style.height = size.height + "px";
+      },
+      width: "100%",
+      height: "100%"
+    }).embed(element_wrap);
+
+    // iframe을 넣은 element를 보이게 한다.
+    element_wrap.style.display = "block";
   }
 </script>
