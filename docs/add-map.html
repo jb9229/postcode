@@ -7,7 +7,7 @@
   style="margin-right: 20px"
 />
 <input type="button" onclick="calcel()" value="취소" />
-<input type="button" onclick="saveAdd()" value="선택" /> <br />
+<input type="button" onclick="saveAddr()" value="선택" /> <br />
 
 <!-- 주소 검색 화면-->
 <div
@@ -30,8 +30,7 @@
 ></div>
 <div id="mapInfo" style="display:none">
   <input type="text" id="sido" readonly="true" />
-  <input type="text" id="sigungu" readonly="true" />
-  </br>
+  <input type="text" id="sigungu" readonly="true" /> <br />
   <input type="text" id="latitude" readonly="true" />
   <input type="text" id="longitude" readonly="true" />
 </div>
@@ -123,7 +122,7 @@
     element_wrap.style.display = "block";
   }
 
-  function save() {
+  function saveAddr() {
     const address = document.getElementById("address").value;
     const sido = document.getElementById("sido").value;
     const sigungu = document.getElementById("sigungu").value;
