@@ -6,7 +6,7 @@
   value="주소 검색"
   style="margin-right: 20px"
 />
-<input type="button" onclick="calcel()" value="취소" />
+<input type="button" onclick="cancel()" value="취소" />
 <input type="button" onclick="saveAddr()" value="선택" /> <br />
 
 <!-- 주소 검색 화면-->
@@ -66,6 +66,7 @@
   }
 
   function sample5_execDaumPostcode() {
+    errorNotice("");
     // 현재 scroll 위치를 저장해놓는다.
     var currentScroll = Math.max(
       document.body.scrollTop,
