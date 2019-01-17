@@ -1,9 +1,16 @@
-<input type="text" id="sample5_address" size="30" placeholder="주소" />
+<div id="errorNotice" style="color: red;"></div>
+<input type="text" id="address" size="30" placeholder="주소" />
+<input type="hidden" id="sido" /> <input type="hidden" id="sigungu" />
 <input
   type="button"
   onclick="sample5_execDaumPostcode()"
   value="주소 검색"
-/><br />
+  style="marginRight: 20px"
+/>
+<input type="button" onclick="calcel()" value="취소" />
+<input type="button" onclick="saveAdd()" value="선택" /> <br />
+
+<!-- 주소 검색 화면-->
 <div
   id="wrap"
   style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
@@ -16,14 +23,21 @@
     alt="접기 버튼"
   />
 </div>
+
+<!-- 주소위치 맵 화면 -->
 <div
   id="map"
   style="width:300px;height:300px;margin-top:10px;display:none"
 ></div>
+<input type="text" id="latitude" readonly="true" />
+<input type="text" id="longitude" readonly="true" />
 
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e58edd180ca9edbac661ded4969a2348&libraries=services"></script>
 <script>
+  const WEBMSG_ACTION_SAVE = "SAVE";
+  const WEBMSG_ACTION_CACEL = "CALCEL";
+
   // 우편번호 찾기 찾기 화면을 넣을 element
   var element_wrap = document.getElementById("wrap");
 
@@ -57,9 +71,13 @@
     new daum.Postcode({
       oncomplete: function(data) {
         var addr = data.address; // 최종 주소 변수
+        var sido = data.sido;
+        var sigungu = data.sigungu;
 
         // 주소 정보를 해당 필드에 넣는다.
-        document.getElementById("sample5_address").value = addr;
+        document.getElementById("address").value = addr;
+        document.getElementById("sido").value = sido;
+        document.getElementById("sigungu").value = sigungu;
 
         // iframe을 넣은 element를 안보이게 한다.
         // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
@@ -70,6 +88,10 @@
           // 정상적으로 검색이 완료됐으면
           if (status === daum.maps.services.Status.OK) {
             var result = results[0]; //첫번째 결과의 값을 활용
+
+            // GPS 좌표값을 해당 필드에 넣는다.
+            document.getElementById("longitude").value = result.x;
+            document.getElementById("latitude").value = result.y;
 
             // 해당 주소에 대한 좌표를 받아서
             var coords = new daum.maps.LatLng(result.y, result.x);
@@ -93,5 +115,61 @@
 
     // iframe을 넣은 element를 보이게 한다.
     element_wrap.style.display = "block";
+  }
+
+  function save() {
+    const address = document.getElementById("address").value;
+    const sido = document.getElementById("sido").value;
+    const sigungu = document.getElementById("sigungu").value;
+    const longitude = document.getElementById("longitude").value;
+    const latitude = document.getElementById("latitude").value;
+
+    // Validation
+    if (address === "") {
+      errorNotice("주소를 검색해 주세요");
+      return;
+    }
+    if (sido === "") {
+      errorNotice("시도 주소를 검색해 주세요");
+      return;
+    }
+    if (sigungu === "") {
+      errorNotice("시군 주소를 검색해 주세요");
+      return;
+    }
+    if (longitude === "" || latitude === "") {
+      errorNotice("위경도를 검색해 주세요");
+      return;
+    }
+
+    var postData = {
+      action: WEBMSG_ACTION_SAVE,
+      data: {
+        address: address,
+        sidoAddr: sido,
+        sigunguAddr: sigungu,
+        addrLongitude: longitude,
+        addrLatitude: latitude
+      }
+    };
+
+    var data = JSON.stringify(postData);
+
+    window.postMessage(data);
+  }
+
+  function cancel() {
+    var postData = {
+      action: WEBMSG_ACTION_CACEL,
+      data: {}
+    };
+
+    var data = JSON.stringify(postData);
+
+    window.postMessage(data);
+  }
+
+  function errorNotice(msg) {
+    document.getElementById("errorNotice").innerText = msg;
   }
 </script>
