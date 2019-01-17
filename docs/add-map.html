@@ -5,7 +5,7 @@
   type="button"
   onclick="sample5_execDaumPostcode()"
   value="주소 검색"
-  style="margin-right: 20px"
+  style="margin-right: 20px margin-right: 20px"
 />
 <input type="button" onclick="calcel()" value="취소" />
 <input type="button" onclick="saveAdd()" value="선택" /> <br />
@@ -29,8 +29,10 @@
   id="map"
   style="width:300px;height:300px;margin-top:10px;display:none"
 ></div>
-<input type="text" id="latitude" readonly="true" />
-<input type="text" id="longitude" readonly="true" />
+<div id="mapInfo" style="display:none">
+  <input type="text" id="latitude" readonly="true" />
+  <input type="text" id="longitude" readonly="true" />
+</div>
 
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e58edd180ca9edbac661ded4969a2348&libraries=services"></script>
@@ -89,14 +91,16 @@
           if (status === daum.maps.services.Status.OK) {
             var result = results[0]; //첫번째 결과의 값을 활용
 
-            // GPS 좌표값을 해당 필드에 넣는다.
-            document.getElementById("longitude").value = result.x;
-            document.getElementById("latitude").value = result.y;
-
             // 해당 주소에 대한 좌표를 받아서
             var coords = new daum.maps.LatLng(result.y, result.x);
             // 지도를 보여준다.
             mapContainer.style.display = "block";
+            document.getElementById("mapInfo").style.display = "block";
+
+            // GPS 좌표값을 해당 필드에 넣는다.
+            document.getElementById("longitude").value = result.x;
+            document.getElementById("latitude").value = result.y;
+
             map.relayout();
             // 지도 중심을 변경한다.
             map.setCenter(coords);
