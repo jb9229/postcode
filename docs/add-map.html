@@ -1,11 +1,10 @@
 <div id="errorNotice" style="color: red;"></div>
-<input type="text" id="address" size="30" placeholder="주소" />
-<input type="hidden" id="sido" /> <input type="hidden" id="sigungu" />
+<input type="text" id="address" size="30" placeholder="주소" readonly="true" />
 <input
   type="button"
   onclick="sample5_execDaumPostcode()"
   value="주소 검색"
-  style="margin-right: 20px margin-right: 20px"
+  style="margin-right: 20px"
 />
 <input type="button" onclick="calcel()" value="취소" />
 <input type="button" onclick="saveAdd()" value="선택" /> <br />
@@ -30,6 +29,8 @@
   style="width:300px;height:300px;margin-top:10px;display:none"
 ></div>
 <div id="mapInfo" style="display:none">
+  <input type="text" id="sido" readonly="true" />
+  <input type="text" id="sigungu" readonly="true" />
   <input type="text" id="latitude" readonly="true" />
   <input type="text" id="longitude" readonly="true" />
 </div>
