@@ -1,10 +1,11 @@
 <div id="errorNotice" style="color: red;"></div>
-<input type="text" id="address" size="30" placeholder="주소" readonly="true" />
 <input
-  type="button"
-  onclick="sample5_execDaumPostcode()"
-  value="주소 검색"
-  style="margin-right: 20px"
+  type="text"
+  id="address"
+  size="30"
+  placeholder="주소"
+  on
+  readonly="true"
 />
 <input type="button" onclick="cancel()" value="취소" />
 <input type="button" onclick="saveAddr()" value="선택" /> <br />
@@ -60,12 +61,14 @@
     map: map
   });
 
+  execDaumPostcode();
+
   function foldDaumPostcode() {
     // iframe을 넣은 element를 안보이게 한다.
     element_wrap.style.display = "none";
   }
 
-  function sample5_execDaumPostcode() {
+  function execDaumPostcode() {
     errorNotice("");
     // 현재 scroll 위치를 저장해놓는다.
     var currentScroll = Math.max(
