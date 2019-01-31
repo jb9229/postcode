@@ -12,7 +12,7 @@
   type="button"
   onclick="saveAddr()"
   value="선택"
-  style="width:100px;height: 30px;color:#00A651; background-color:#FDCA24; font-weight: bold; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
+  style="width:100px;height: 30px;color:'gray'; background-color:#FDCA24; font-weight: bold; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
   disabled
 />
 <p></p>
@@ -123,6 +123,7 @@
             marker.setPosition(coords);
 
             // 주소선택 버튼을 활성화 한다.
+            document.getElementById().style.color = "#00A651";
             document.getElementById("selAddbutton").disabled = false;
           }
         });
