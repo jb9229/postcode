@@ -17,7 +17,6 @@
     disabled
   />
 </div>
-<p></p>
 <br />
 
 <!-- 주소 검색 화면-->
@@ -41,7 +40,6 @@
 ></div>
 <div id="mapInfo" style="display:none">
   <input type="text" id="address" readonly="true" />
-  />
   <input type="text" id="sido" readonly="true" />
   <input type="text" id="sigungu" readonly="true" /> <br />
   <input type="text" id="latitude" readonly="true" />
@@ -125,7 +123,7 @@
             marker.setPosition(coords);
 
             // 주소선택 버튼을 활성화 한다.
-            document.getElementById().style.color = "#00A651";
+            document.getElementById("selAddbutton").style.color = "#00A651";
             document.getElementById("selAddbutton").disabled = false;
           }
         });
