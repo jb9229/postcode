@@ -1,26 +1,21 @@
 <div id="errorNotice" style="color: red;"></div>
 
 <input
-  type="text"
-  id="address"
-  size="20"
-  placeholder="주소"
-  readonly="true"
-  style="height: 30px;"
-/>
-<input
   type="button"
   onclick="cancel()"
-  value="취소"
+  value="닫기"
   color="#00A651"
-  style="width:55px;height:30px;color:#00A651;font-weight: bold"
+  style="width:100px;height:30px;color:#00A651;background-color:#FDCA24;font-weight: bold; margin-right: 50px; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
 />
 <input
+  id="selAddbutton"
   type="button"
   onclick="saveAddr()"
   value="선택"
-  style="width:55px;height: 30px;color:#00A651;font-weight: bold"
+  style="width:100px;height: 30px;color:#00A651; background-color:#FDCA24; font-weight: bold; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
+  disabled
 />
+<p></p>
 <br />
 
 <!-- 주소 검색 화면-->
@@ -43,6 +38,8 @@
   style="width:300px;height:300px;margin-top:10px;display:none"
 ></div>
 <div id="mapInfo" style="display:none">
+  <input type="text" id="address" readonly="true" />
+  />
   <input type="text" id="sido" readonly="true" />
   <input type="text" id="sigungu" readonly="true" /> <br />
   <input type="text" id="latitude" readonly="true" />
@@ -124,6 +121,9 @@
             map.setCenter(coords);
             // 마커를 결과값으로 받은 위치로 옮긴다.
             marker.setPosition(coords);
+
+            // 주소선택 버튼을 활성화 한다.
+            document.getElementById("selAddbutton").disabled = false;
           }
         });
       },
