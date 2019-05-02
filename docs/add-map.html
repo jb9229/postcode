@@ -90,6 +90,10 @@
         var sido = data.sido;
         var sigungu = data.sigungu;
 
+        if (!sigungu) {
+          sigungu = data.bname;
+        }
+
         // 주소 정보를 해당 필드에 넣는다.
         document.getElementById("address").value = addr;
         document.getElementById("sido").value = sido;
