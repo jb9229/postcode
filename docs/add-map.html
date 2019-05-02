@@ -91,7 +91,13 @@
         var sigungu = data.sigungu;
 
         if (!sigungu) {
-          sigungu = data.bname;
+          // 군구 주소가 없을때(ex> 세종시 고운동)
+          sigungu = data.bname1;
+
+          if (!sigungu) {
+            // 면동 주소가 없을때(ex> 세종시 금남면)
+            sigungu = data.bname;
+          }
         }
 
         // 주소 정보를 해당 필드에 넣는다.
