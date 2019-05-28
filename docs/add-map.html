@@ -106,8 +106,10 @@
 
         if (
           sigunguArr.length > 1 &&
-          sigunguArr[0].substring(str.length - 1) === "시" &&
-          sigunguArr[sigunguArr.length - 1].substring(str.length - 1) === "구"
+          sigunguArr[0].substring(sigunguArr[0].length - 1) === "시" &&
+          sigunguArr[sigunguArr.length - 1].substring(
+            sigunguArr[sigunguArr.length - 1].length - 1
+          ) === "구"
         ) {
           sigungu = sigunguArr[0];
         }
