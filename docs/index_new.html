@@ -1,36 +1,76 @@
-<div style="margin-bottom: 50px;">
-  <label>주소 입력: </label>
-  <input type="button" onclick="execDaumPostcode()" value="주소 찾기" /><br />
+<div id="errorNotice" style="color: red;"></div>
+<div style=" width: 100%; text-align: center; margin: 3px;">
+  <input
+    type="button"
+    onclick="cancel()"
+    value="X"
+    color="#00A651"
+    style="margin-right: 17px;"
+  />
+  <input
+    id="selAddbutton"
+    type="button"
+    onclick="saveAddr()"
+    value="주소 선택완료"
+    style="width:200px;height:40px;color:'gray'; background-color:#FDCA24; font-size: 1.3rem; font-weight: bold; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
+    disabled
+  />
+</div>
+<br />
 
-  <div
-    id="wrap"
-    style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
-  >
-    <img
-      src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
-      id="btnFoldWrap_1"
-      style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
-      onclick="foldDaumPostcode()"
-      alt="접기 버튼"
-    />
-  </div>
-  <div style="margin-bottom:3px;">
-    <input type="text" id="address" class="d_form large" placeholder="주소" />
-  </div>
-  <div>
-    <input
-      type="text"
-      id="addressDetail"
-      onchange="sendPostData()"
-      placeholder="상세 주소"
-    />
-  </div>
+<!-- 주소 검색 화면-->
+<div
+  id="wrap"
+  style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
+>
+  <img
+    src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
+    id="btnFoldWrap_1"
+    style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+    onclick="foldDaumPostcode()"
+    alt="접기 버튼"
+  />
+</div>
+
+<!-- 주소위치 맵 화면 -->
+<div
+  id="map"
+  style="width:300px;height:300px;margin-top:10px;display:none"
+></div>
+<div id="mapInfo" style="display:none">
+  <input type="text" id="address" readonly="true" />
+  <input type="text" id="sido" readonly="true" />
+  <input type="text" id="sigungu" readonly="true" /> <br />
+  <input type="text" id="latitude" readonly="true" />
+  <input type="text" id="longitude" readonly="true" />
 </div>
 
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e58edd180ca9edbac661ded4969a2348&libraries=services"></script>
 <script>
+  const WEBMSG_ACTION_SAVE = "SAVE";
+  const WEBMSG_ACTION_CACEL = "CALCEL";
+
   // 우편번호 찾기 찾기 화면을 넣을 element
   var element_wrap = document.getElementById("wrap");
+
+  var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+    mapOption = {
+      center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+      level: 5 // 지도의 확대 레벨
+    };
+
+  //지도를 미리 생성
+  var map = new daum.maps.Map(mapContainer, mapOption);
+  //주소-좌표 변환 객체를 생성
+  var geocoder = new daum.maps.services.Geocoder();
+  //마커를 미리 생성
+  var marker = new daum.maps.Marker({
+    position: new daum.maps.LatLng(37.537187, 127.005476),
+    map: map
+  });
+
+  execDaumPostcode();
 
   function foldDaumPostcode() {
     // iframe을 넣은 element를 안보이게 한다.
@@ -38,46 +78,78 @@
   }
 
   function execDaumPostcode() {
+    errorNotice("");
     // 현재 scroll 위치를 저장해놓는다.
-    var currentScroll = Math.max(
-      document.body.scrollTop,
-      document.documentElement.scrollTop
-    );
+    // var currentScroll = Math.max(
+    //   document.body.scrollTop,
+    //   document.documentElement.scrollTop
+    // );
+
     new daum.Postcode({
       oncomplete: function(data) {
-        // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+        var addr = data.address; // 최종 주소 변수
+        var sido = data.sido;
+        var sigungu = data.sigungu;
 
-        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-        var fullAddr = data.address; // 최종 주소 변수
-        var extraAddr = ""; // 조합형 주소 변수
+        if (!sigungu) {
+          // 군구 주소가 없을때(ex> 세종특별자치시 고운동)
+          sigungu = data.bname1;
 
-        // 기본 주소가 도로명 타입일때 조합한다.
-        if (data.addressType === "R") {
-          //법정동명이 있을 경우 추가한다.
-          if (data.bname !== "") {
-            extraAddr += data.bname;
+          if (!sigungu) {
+            // 면동 주소가 없을때(ex> 세종특별자치시 금남면)
+            sigungu = data.bname;
           }
-          // 건물명이 있을 경우 추가한다.
-          if (data.buildingName !== "") {
-            extraAddr +=
-              extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
-          }
-          // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
-          fullAddr += extraAddr !== "" ? " (" + extraAddr + ")" : "";
+        }
+
+        //군구구에 구를 뺀다. 구까지 세부적으로 나눌 필요가 없음
+        const sigunguArr = sigungu.split(" ");
+
+        if (
+          sigunguArr.length > 1 &&
+          sigunguArr[0].substring(sigunguArr[0].length - 1) === "시" &&
+          sigunguArr[sigunguArr.length - 1].substring(
+            sigunguArr[sigunguArr.length - 1].length - 1
+          ) === "구"
+        ) {
+          sigungu = sigunguArr[0];
         }
 
         // 주소 정보를 해당 필드에 넣는다.
-        document.getElementById("address").value = fullAddr;
+        document.getElementById("address").value = addr;
+        document.getElementById("sido").value = sido;
+        document.getElementById("sigungu").value = sigungu;
 
         // iframe을 넣은 element를 안보이게 한다.
         // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
         element_wrap.style.display = "none";
 
-        // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
-        document.body.scrollTop = currentScroll;
+        // 주소로 상세 정보를 검색
+        geocoder.addressSearch(data.address, function(results, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === daum.maps.services.Status.OK) {
+            var result = results[0]; //첫번째 결과의 값을 활용
 
-        sendPostData();
+            // 해당 주소에 대한 좌표를 받아서
+            var coords = new daum.maps.LatLng(result.y, result.x);
+            // 지도를 보여준다.
+            mapContainer.style.display = "block";
+            document.getElementById("mapInfo").style.display = "block";
+
+            // GPS 좌표값을 해당 필드에 넣는다.
+            document.getElementById("longitude").value = result.x;
+            document.getElementById("latitude").value = result.y;
+
+            map.relayout();
+            // 지도 중심을 변경한다.
+            map.setCenter(coords);
+            // 마커를 결과값으로 받은 위치로 옮긴다.
+            marker.setPosition(coords);
+
+            // 주소선택 버튼을 활성화 한다.
+            document.getElementById("selAddbutton").style.color = "#00A651";
+            document.getElementById("selAddbutton").disabled = false;
+          }
+        });
       },
       // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
       onresize: function(size) {
@@ -91,14 +163,59 @@
     element_wrap.style.display = "block";
   }
 
-  function sendPostData() {
+  function saveAddr() {
+    const address = document.getElementById("address").value;
+    const sido = document.getElementById("sido").value;
+    const sigungu = document.getElementById("sigungu").value;
+    const longitude = document.getElementById("longitude").value;
+    const latitude = document.getElementById("latitude").value;
+
+    // Validation
+    if (address === "") {
+      errorNotice("주소를 검색해 주세요");
+      return;
+    }
+    if (sido === "") {
+      errorNotice("시도 주소를 검색해 주세요");
+      return;
+    }
+    if (sigungu === "") {
+      errorNotice("시군 주소를 검색해 주세요");
+      return;
+    }
+    if (longitude === "" || latitude === "") {
+      errorNotice("위경도를 검색해 주세요");
+      return;
+    }
+
     var postData = {
-      address: document.getElementById("address").value,
-      addressDetail: document.getElementById("addressDetail").value
+      action: WEBMSG_ACTION_SAVE,
+      data: {
+        address: address,
+        sidoAddr: sido,
+        sigunguAddr: sigungu,
+        addrLongitude: longitude,
+        addrLatitude: latitude
+      }
     };
 
     var data = JSON.stringify(postData);
 
     window.ReactNativeWebView.postMessage(data);
+  }
+
+  function cancel() {
+    var postData = {
+      action: WEBMSG_ACTION_CACEL,
+      data: {}
+    };
+
+    var data = JSON.stringify(postData);
+
+    window.ReactNativeWebView.postMessage(data);
+  }
+
+  function errorNotice(msg) {
+    document.getElementById("errorNotice").innerText = msg;
   }
 </script>
