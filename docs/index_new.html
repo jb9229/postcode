@@ -1,50 +1,3 @@
-<div id="errorNotice" style="color: red;"></div>
-<div style=" width: 100%; text-align: center; margin: 3px;">
-  <input
-    type="button"
-    onclick="cancel()"
-    value="X"
-    color="#00A651"
-    style="margin-right: 17px;"
-  />
-  <input
-    id="selAddbutton"
-    type="button"
-    onclick="saveAddr()"
-    value="주소 선택완료"
-    style="width:200px;height:40px;color:'gray'; background-color:#FDCA24; font-size: 1.3rem; font-weight: bold; border: 1px solid #00a651; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
-    disabled
-  />
-</div>
-<br />
-
-<!-- 주소 검색 화면-->
-<div
-  id="wrap"
-  style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
->
-  <img
-    src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
-    id="btnFoldWrap_1"
-    style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
-    onclick="foldDaumPostcode()"
-    alt="접기 버튼"
-  />
-</div>
-
-<!-- 주소위치 맵 화면 -->
-<div
-  id="map"
-  style="width:300px;height:300px;margin-top:10px;display:none"
-></div>
-<div id="mapInfo" style="display:none">
-  <input type="text" id="address" readonly="true" />
-  <input type="text" id="sido" readonly="true" />
-  <input type="text" id="sigungu" readonly="true" /> <br />
-  <input type="text" id="latitude" readonly="true" />
-  <input type="text" id="longitude" readonly="true" />
-</div>
-
 <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e58edd180ca9edbac661ded4969a2348&libraries=services"></script>
 <script>
@@ -147,6 +100,8 @@
 
             // 주소선택 버튼을 활성화 한다.
             document.getElementById("selAddbutton").style.color = "#00A651";
+            document.getElementById("selAddbutton").style.backgroundColor = "#FDCA24";
+            document.getElementById("selAddbutton").style.borderColor = "#00a651";
             document.getElementById("selAddbutton").disabled = false;
           }
         });
@@ -219,3 +174,54 @@
     document.getElementById("errorNotice").innerText = msg;
   }
 </script>
+
+<html>
+  <div id="errorNotice" style="color: red;"></div>
+  <div style="width: 100%; text-align: center; margin: 3px; position: fixed; top: 0;">
+    <input
+      type="button"
+      onclick="cancel()"
+      value="X"
+      color="#00A651"
+      style="width: 80px; height: 60px; margin-right: 17px;"
+    />
+    <input
+      id="selAddbutton"
+      type="button"
+      onclick="saveAddr()"
+      value="주소 선택완료"
+      style="width:200px;height:60px;color:'black'; background-color: 'gray'; font-size: 1.3rem; font-weight: bold; border: 1px solid black; box-shadow: 10px 10px 4px 0px rgba(100,100,100,0.5);"
+      disabled
+    />
+  </div>
+  <br />
+  
+  <div style="width: 100%; ">
+    <!-- 주소 검색 화면-->
+    <div
+      id="wrap"
+      style="display:none;border:1px solid;width:auto;height:350px;margin:5px 0;position:relative"
+    >
+      <img
+        src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
+        id="btnFoldWrap_1"
+        style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+        onclick="foldDaumPostcode()"
+        alt="접기 버튼"
+      />
+    </div>
+
+    <!-- 주소위치 맵 화면 -->
+    <div
+      id="map"
+      style="width:300px;height:300px;margin-top:10px;display:none"
+    ></div>
+    <div id="mapInfo" style="display:none">
+      <input type="text" id="address" readonly="true" />
+      <input type="text" id="sido" readonly="true" />
+      <input type="text" id="sigungu" readonly="true" /> <br />
+      <input type="text" id="latitude" readonly="true" />
+      <input type="text" id="longitude" readonly="true" />
+    </div>
+  </div>
+</html>
