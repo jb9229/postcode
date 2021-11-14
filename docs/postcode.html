@@ -1,0 +1,155 @@
+<html>
+  <body>
+    <div id="errorNotice" style="color: red;"></div>
+      <!-- 주소 검색 화면-->
+      <div
+        id="wrap"
+        style="border:1px solid;width:auto;height:350px;margin: 100px 0;position:relative"
+      >
+        <img
+          src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
+          id="btnFoldWrap_1"
+          style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1"
+          onclick="foldDaumPostcode()"
+          alt="접기 버튼"
+        />
+      </div>
+    <!-- </div> -->
+  </body>
+</html>
+
+<script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0cb83ceef1fbf40f3e7575283d6e6585&libraries=services"></script>
+<script>
+  const WEBMSG_ACTION_SAVE = "SAVE";
+  const WEBMSG_ACTION_CACEL = "CALCEL";
+
+  // 우편번호 찾기 찾기 화면을 넣을 element
+  var element_wrap = document.getElementById("wrap");
+
+  //주소-좌표 변환 객체를 생성
+  var geocoder = new daum.maps.services.Geocoder();
+
+  execDaumPostcode();
+
+  function foldDaumPostcode() {
+    // iframe을 넣은 element를 안보이게 한다.
+    element_wrap.style.display = "none";
+  }
+
+  function execDaumPostcode() {
+    errorNotice("");
+    // 현재 scroll 위치를 저장해놓는다.
+    // var currentScroll = Math.max(
+    //   document.body.scrollTop,
+    //   document.documentElement.scrollTop
+    // );
+
+    new daum.Postcode({
+      oncomplete: function(data) {
+        var addr = data.address; // 최종 주소 변수
+        var sido = data.sido;
+        var sigungu = data.sigungu;
+
+        if (!sigungu) {
+          // 군구 주소가 없을때(ex> 세종특별자치시 고운동)
+          sigungu = data.bname1;
+
+          if (!sigungu) {
+            // 면동 주소가 없을때(ex> 세종특별자치시 금남면)
+            sigungu = data.bname;
+          }
+        }
+
+        //군구구에 구를 뺀다. 구까지 세부적으로 나눌 필요가 없음
+        const sigunguArr = sigungu.split(" ");
+
+        if (
+          sigunguArr.length > 1 &&
+          sigunguArr[0].substring(sigunguArr[0].length - 1) === "시" &&
+          sigunguArr[sigunguArr.length - 1].substring(
+            sigunguArr[sigunguArr.length - 1].length - 1
+          ) === "구"
+        ) {
+          sigungu = sigunguArr[0];
+        }
+
+        // 주소로 상세 정보를 검색
+        geocoder.addressSearch(data.address, function(results, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === daum.maps.services.Status.OK) {
+            var result = results[0]; //첫번째 결과의 값을 활용
+
+            // 해당 주소에 대한 좌표를 받아서
+            var coords = new daum.maps.LatLng(result.y, result.x);
+          }
+        });
+      },
+      // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+      onresize: function(size) {
+        element_wrap.style.height = size.height + "px";
+      },
+      width: "100%",
+      height: "100%"
+    }).embed(element_wrap);
+
+    // iframe을 넣은 element를 보이게 한다.
+    element_wrap.style.display = "block";
+  }
+
+  function saveAddr() {
+    const address = document.getElementById("address").value;
+    const sido = document.getElementById("sido").value;
+    const sigungu = document.getElementById("sigungu").value;
+    const longitude = document.getElementById("longitude").value;
+    const latitude = document.getElementById("latitude").value;
+
+    // Validation
+    if (address === "") {
+      errorNotice("주소를 검색해 주세요");
+      return;
+    }
+    if (sido === "") {
+      errorNotice("시도 주소를 검색해 주세요");
+      return;
+    }
+    if (sigungu === "") {
+      errorNotice("시군 주소를 검색해 주세요");
+      return;
+    }
+    if (longitude === "" || latitude === "") {
+      errorNotice("위경도를 검색해 주세요");
+      return;
+    }
+
+    var postData = {
+      action: WEBMSG_ACTION_SAVE,
+      data: {
+        address: address,
+        sidoAddr: sido,
+        sigunguAddr: sigungu,
+        addrLongitude: longitude,
+        addrLatitude: latitude
+      }
+    };
+
+    var data = JSON.stringify(postData);
+
+    window.ReactNativeWebView.postMessage(data);
+  }
+
+  function cancel() {
+    var postData = {
+      action: WEBMSG_ACTION_CACEL,
+      data: {}
+    };
+
+    var data = JSON.stringify(postData);
+
+    window.ReactNativeWebView.postMessage(data);
+  }
+
+  function errorNotice(msg) {
+    document.getElementById("errorNotice").innerText = msg;
+  }
+</script>
